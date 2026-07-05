@@ -63,21 +63,28 @@ export default function StudentDashboard() {
       const assignmentsMap = new Map(assignmentsList.map(a => [a.id, a]));
 
       const enriched: EnrichedSub[] = await Promise.all(
-        subs.map(async sub => ({
-          sub,
-          assignment: await getAssignmentById(sub.assignmentId),
-          subject: subjectMap.get(sub.subjectId),
-        }))
+        subs.map(async sub => {
+          const assignment = await getAssignmentById(sub.assignmentId);
+          return {
+            sub,
+            assignment,
+            subject: subjectMap.get(sub.subjectId),
+          };
+        })
       );
+
+      // Filter out any entries belonging to deleted assignments!
+      const validEnriched = enriched.filter(e => e.assignment !== null);
+
       // Sort: not submitted first, then by due date
-      enriched.sort((a, b) => {
+      validEnriched.sort((a, b) => {
         const statusOrder: Record<SubmissionStatus, number> = { not_submitted: 0, late: 1, submitted: 2, graded: 3 };
         const so = statusOrder[a.sub.status] - statusOrder[b.sub.status];
         if (so !== 0) return so;
         return (a.assignment?.dueDate?.getTime() ?? 0) - (b.assignment?.dueDate?.getTime() ?? 0);
       });
-      setItems(enriched);
-      setFiltered(enriched);
+      setItems(validEnriched);
+      setFiltered(validEnriched);
 
       // Compute Leaderboard
       const semStudents = studentList.filter(s => s.semester === user.semester);
@@ -86,7 +93,7 @@ export default function StudentDashboard() {
       semStudents.forEach(s => leaderboardMap.set(s.id, { marks: 0, bonus: 0 }));
 
       allSubmissions.forEach(sub => {
-        if (semStudentIds.has(sub.studentId)) {
+        if (semStudentIds.has(sub.studentId) && assignmentsMap.has(sub.assignmentId)) {
           const entry = leaderboardMap.get(sub.studentId) || { marks: 0, bonus: 0 };
           const marksEarned = sub.marks || 0;
 
@@ -111,6 +118,7 @@ export default function StudentDashboard() {
           });
         }
       });
+
 
       const sortedLeaderboard: LeaderboardEntry[] = semStudents.map(s => {
         const stats = leaderboardMap.get(s.id) || { marks: 0, bonus: 0 };

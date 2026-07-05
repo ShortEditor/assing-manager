@@ -44,10 +44,12 @@ export default function StudentMarksPage() {
       getAssignments(),
     ]).then(([subs, subjectList, assignmentList]) => {
       const assignmentMap = new Map<string, AssignmentDoc>(assignmentList.map(a => [a.id, a]));
+      const activeAssignmentIds = new Set(assignmentList.map(a => a.id));
+      const activeSubs = subs.filter(sub => activeAssignmentIds.has(sub.assignmentId));
 
       // Group graded submissions by subject
       const bySubject = new Map<string, { subs: SubmissionDoc[]; maxMarks: number }>();
-      for (const sub of subs) {
+      for (const sub of activeSubs) {
         if (sub.status !== 'graded' || sub.marks === null) continue;
         const assignment = assignmentMap.get(sub.assignmentId);
         if (!assignment) continue;
@@ -63,8 +65,8 @@ export default function StudentMarksPage() {
         const totalMarks = entry?.subs.reduce((s, m) => s + (m.marks ?? 0), 0) ?? 0;
         const maxMarks = entry?.maxMarks ?? 0;
         const percentage = maxMarks > 0 ? Math.round((totalMarks / maxMarks) * 100) : 0;
-        const gradedCount = subs.filter(s => s.subjectId === subj.id && s.status === 'graded').length;
-        return { subject: subj, total: subs.filter(s => s.subjectId === subj.id).length, graded: gradedCount, totalMarks, maxMarks, percentage };
+        const gradedCount = activeSubs.filter(s => s.subjectId === subj.id && s.status === 'graded').length;
+        return { subject: subj, total: activeSubs.filter(s => s.subjectId === subj.id).length, graded: gradedCount, totalMarks, maxMarks, percentage };
       }).filter(s => s.total > 0);
 
       setSummaries(result);
