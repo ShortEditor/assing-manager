@@ -567,14 +567,15 @@ export default function StudentsPage() {
                           </button>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-2 group">
+                        <div
+                          className="flex items-center gap-2 group cursor-pointer hover:text-indigo-400 transition-colors"
+                          onClick={() => { setEditingId(s.id); setEditName(s.name); }}
+                          title="Click to edit name"
+                        >
                           <span>{s.name}</span>
-                          <button
-                            onClick={() => { setEditingId(s.id); setEditName(s.name); }}
-                            className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-slate-300 transition-opacity"
-                          >
+                          <span className="opacity-0 group-hover:opacity-100 text-slate-500 transition-opacity">
                             <Edit2 className="w-3 h-3" />
-                          </button>
+                          </span>
                         </div>
                       )}
                     </td>
