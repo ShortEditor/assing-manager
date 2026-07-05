@@ -1,12 +1,13 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import {
   BookOpen, LayoutDashboard, Users, ClipboardList,
   FileSpreadsheet, GraduationCap, LogOut, ChevronRight,
-  BookMarked, ShieldCheck,
+  BookMarked, ShieldCheck, Sun, Moon,
 } from 'lucide-react';
 import type { UserRole } from '@/types';
 
@@ -57,6 +58,22 @@ export default function Sidebar({ onClose, className = '' }: SidebarProps) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') as 'dark' | 'light';
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle('light', savedTheme === 'light');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    localStorage.setItem('theme', nextTheme);
+    document.documentElement.classList.toggle('light', nextTheme === 'light');
+  };
 
   if (!user) return null;
 
@@ -108,6 +125,23 @@ export default function Sidebar({ onClose, className = '' }: SidebarProps) {
 
       {/* User info + logout */}
       <div className="px-3 py-4 border-t border-slate-800 space-y-3">
+        <button
+          onClick={toggleTheme}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-all duration-150"
+        >
+          {theme === 'dark' ? (
+            <>
+              <Sun className="w-3.5 h-3.5 text-amber-400" />
+              Light Mode
+            </>
+          ) : (
+            <>
+              <Moon className="w-3.5 h-3.5 text-indigo-400" />
+              Dark Mode
+            </>
+          )}
+        </button>
+
         <div className="flex items-center gap-3 px-2">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0">
             <span className="text-xs font-bold text-white">
