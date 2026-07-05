@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ──────────────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSuperAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // ── Admins collection ─────────────────────────────────────
+    match /admins/{adminId} {
+      allow read: if isSignedIn() && request.auth.uid == adminId;
+      allow write: if false; // Only via Firebase Admin SDK / Console
+    }
+
+    // ── Staff collection ──────────────────────────────────────
+    // Super admin can read/write all. Staff can read their own doc.
+    // PIN-based login: anyone can query by staffCode+pin (needed for login).
+    match /staff/{staffId} {
+      allow read: if isSuperAdmin()
+        || (isSignedIn() && request.auth.uid == staffId)
+        || request.query.limit <= 1; // Allow PIN lookup query
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    // ── Students collection ───────────────────────────────────
+    match /students/{studentId} {
+      allow read: if isSuperAdmin()
+        || request.query.limit <= 1; // Allow roll+pin lookup
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    // ── Subjects collection ───────────────────────────────────
+    match /subjects/{subjectId} {
+      allow read: if true; // Public read — students see subject names
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    // ── Assignments collection ────────────────────────────────
+    match /assignments/{assignmentId} {
+      allow read: if true;
+      allow create: if isSuperAdmin()
+        || exists(/databases/$(database)/documents/staff/$(request.auth.uid));
+      allow update, delete: if isSuperAdmin()
+        || resource.data.createdBy == request.auth.uid;
+    }
+
+    // ── Submissions collection ────────────────────────────────
+    match /submissions/{submissionId} {
+      // Students can read their own submissions
+      allow read: if isSuperAdmin()
+        || resource.data.studentId == request.auth.uid
+        || exists(/databases/$(database)/documents/staff/$(request.auth.uid));
+      // Staff can update submissions for their subjects
+      allow update: if isSuperAdmin()
+        || exists(/databases/$(database)/documents/staff/$(request.auth.uid));
+      allow create: if isSuperAdmin()
+        || exists(/databases/$(database)/documents/staff/$(request.auth.uid));
+      allow delete: if isSuperAdmin();
+    }
+  }
+}
