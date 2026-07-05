@@ -44,6 +44,8 @@ export default function StudentsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [classFilter, setClassFilter] = useState('');
+  const [yearFilter, setYearFilter] = useState('');
+  const [semFilter, setSemFilter] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [csvRows, setCsvRows] = useState<CSVStudentRow[]>([]);
@@ -98,6 +100,8 @@ export default function StudentsPage() {
       result = result.filter(s => s.name.toLowerCase().includes(q) || s.rollNo.toLowerCase().includes(q));
     }
     if (classFilter) result = result.filter(s => s.class === classFilter);
+    if (yearFilter) result = result.filter(s => String(s.year) === yearFilter);
+    if (semFilter) result = result.filter(s => String(s.semester) === semFilter);
 
     // Apply Sorting
     result = [...result].sort((a, b) => {
@@ -107,7 +111,7 @@ export default function StudentsPage() {
     });
 
     setFiltered(result);
-  }, [search, classFilter, students, sortField, sortOrder]);
+  }, [search, classFilter, yearFilter, semFilter, students, sortField, sortOrder]);
 
   const classes = [...new Set(students.map(s => s.class).filter(Boolean))].sort();
 
@@ -501,15 +505,55 @@ export default function StudentsPage() {
         )}
 
         {/* Filters */}
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
             <input className="input pl-9" placeholder="Search name or roll number…" value={search} onChange={e => setSearch(e.target.value)} />
           </div>
-          <select className="input w-40" value={classFilter} onChange={e => setClassFilter(e.target.value)}>
-            <option value="">All Classes</option>
-            {classes.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
+          <div className="flex gap-2 flex-wrap">
+            <select className="input w-36" value={classFilter} onChange={e => setClassFilter(e.target.value)}>
+              <option value="">All Classes</option>
+              {classes.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <select className="input w-28" value={yearFilter} onChange={e => {
+              setYearFilter(e.target.value);
+              setSemFilter('');
+            }}>
+              <option value="">All Years</option>
+              <option value="1">Year 1</option>
+              <option value="2">Year 2</option>
+              <option value="3">Year 3</option>
+            </select>
+            <select className="input w-32" value={semFilter} onChange={e => setSemFilter(e.target.value)}>
+              <option value="">All Semesters</option>
+              {yearFilter === '1' && (
+                <>
+                  <option value="1">Semester 1</option>
+                  <option value="2">Semester 2</option>
+                </>
+              )}
+              {yearFilter === '2' && (
+                <>
+                  <option value="3">Semester 3</option>
+                  <option value="4">Semester 4</option>
+                </>
+              )}
+              {yearFilter === '3' && (
+                <>
+                  <option value="5">Semester 5</option>
+                </>
+              )}
+              {!yearFilter && (
+                <>
+                  <option value="1">Semester 1</option>
+                  <option value="2">Semester 2</option>
+                  <option value="3">Semester 3</option>
+                  <option value="4">Semester 4</option>
+                  <option value="5">Semester 5</option>
+                </>
+              )}
+            </select>
+          </div>
         </div>
 
         {/* Student list */}
