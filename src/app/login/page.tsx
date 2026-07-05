@@ -64,12 +64,12 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* ── Left panel: branding ── */}
-      <div className="hidden lg:flex flex-col justify-between p-12 lg:w-[45%] bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 border-r border-slate-800">
+      <div className="hidden lg:flex flex-col justify-between p-12 lg:w-[45%] bg-gradient-to-br from-indigo-950 via-[#0f172a] to-[#020617] border-r border-[#1e293b]">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30">
             <BookOpen className="w-5 h-5 text-indigo-400" />
           </div>
-          <span className="font-semibold text-slate-200">Marks Tracker</span>
+          <span className="font-semibold text-[#e2e8f0]">Marks Tracker</span>
         </div>
 
         <div className="space-y-6">
@@ -81,7 +81,7 @@ export default function LoginPage() {
             <h1 className="text-4xl font-bold text-white leading-tight">
               Assignment &<br />Marks Management
             </h1>
-            <p className="text-slate-400 text-base leading-relaxed max-w-sm">
+            <p className="text-[#94a3b8] text-base leading-relaxed max-w-sm">
               One place to track every submission, record marks, and export semester reports — no more scattered notebooks.
             </p>
           </div>
@@ -93,15 +93,15 @@ export default function LoginPage() {
               { label: 'PIN Login', desc: 'Secure, admin-managed access' },
               { label: 'Correction Log', desc: 'Who graded what, when' },
             ].map(f => (
-              <div key={f.label} className="glass rounded-xl p-3.5 space-y-1">
-                <p className="text-sm font-semibold text-slate-200">{f.label}</p>
-                <p className="text-xs text-slate-500">{f.desc}</p>
+              <div key={f.label} className="bg-slate-900/60 backdrop-blur-md border border-[#334155]/50 rounded-xl p-3.5 space-y-1">
+                <p className="text-sm font-semibold text-[#e2e8f0]">{f.label}</p>
+                <p className="text-xs text-[#64748b]">{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <p className="text-xs text-slate-600">Internal use only · Not for public access</p>
+        <div />
       </div>
 
       {/* ── Right panel: login form ── */}
@@ -116,7 +116,7 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold text-white">Welcome back</h2>
+            <h2 className="text-2xl font-bold text-slate-100">Welcome back</h2>
             <p className="text-sm text-slate-400">Sign in to your account to continue</p>
           </div>
 
