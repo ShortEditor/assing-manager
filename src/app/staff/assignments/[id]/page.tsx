@@ -253,8 +253,8 @@ export default function RosterPage() {
               <span className="text-xs uppercase font-semibold tracking-wider text-slate-400">Roster Details</span>
             </div>
 
-            <div className="card overflow-hidden">
-            <table className="w-full text-sm">
+            <div className="card overflow-x-auto">
+            <table className="w-full text-sm min-w-[600px]">
               <thead>
                 <tr className="border-b border-slate-800 bg-slate-900/70">
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide w-12">#</th>

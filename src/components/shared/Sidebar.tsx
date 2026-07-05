@@ -48,7 +48,12 @@ const ROLE_COLOR: Record<UserRole, string> = {
   student: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
 };
 
-export default function Sidebar() {
+interface SidebarProps {
+  onClose?: () => void;
+  className?: string;
+}
+
+export default function Sidebar({ onClose, className = '' }: SidebarProps) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
@@ -63,7 +68,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 shrink-0 h-screen sticky top-0 flex flex-col bg-slate-900 border-r border-slate-800">
+    <aside className={`w-64 flex flex-col bg-slate-900 border-r border-slate-800 ${className}`}>
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-800">
         <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30 shrink-0">
@@ -84,6 +89,7 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={onClose}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 group ${
                 active
                   ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/20'
@@ -118,7 +124,10 @@ export default function Sidebar() {
         </div>
         <button
           id="sidebar-logout"
-          onClick={handleLogout}
+          onClick={() => {
+            onClose?.();
+            handleLogout();
+          }}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-150"
         >
           <LogOut className="w-4 h-4" />

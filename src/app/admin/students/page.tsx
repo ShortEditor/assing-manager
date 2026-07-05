@@ -463,8 +463,8 @@ export default function StudentsPage() {
             {csvRows.length > 0 && (
               <div>
                 <p className="text-sm text-slate-300 mb-2">{csvRows.length} rows to import</p>
-                <div className="max-h-40 overflow-y-auto rounded-lg border border-slate-800 text-xs">
-                  <table className="w-full">
+                <div className="max-h-40 overflow-auto rounded-lg border border-slate-800 text-xs">
+                  <table className="w-full min-w-[500px]">
                     <thead className="bg-slate-900 sticky top-0">
                       <tr>{['Name','Roll No','Class','Year','Semester'].map(h => (
                         <th key={h} className="px-3 py-2 text-left text-slate-400 font-medium">{h}</th>
@@ -520,8 +520,8 @@ export default function StudentsPage() {
             <p className="font-medium">No students found</p>
           </div>
         ) : (
-          <div className="card overflow-hidden">
-            <table className="w-full text-sm">
+          <div className="card overflow-x-auto">
+            <table className="w-full text-sm min-w-[600px]">
               <thead>
                 <tr className="border-b border-slate-800 bg-slate-900/50">
                   <th
